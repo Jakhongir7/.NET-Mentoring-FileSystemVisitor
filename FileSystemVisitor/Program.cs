@@ -14,37 +14,26 @@ namespace FileSystemVisitor
             Console.WriteLine("*** Enter the path of the directory: ***");
             var rootDirectorypath = Console.ReadLine();
 
-            using var watcher = new FileSystemWatcher(rootDirectorypath);
-            watcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
+            Notifications n = new Notifications();
+            n.Notify += DisplayMessage;
+            n.Start();
 
-            watcher.Changed += OnChanged;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.Renamed += OnRenamed;
-            watcher.Error += OnError;
-
-            watcher.Filter = "*.txt";
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
+            void DisplayMessage(string message) => Console.WriteLine(message);
 
             Console.WriteLine($"Getting directory tree of '{rootDirectorypath}'");
             PrintDirectoryTree(rootDirectorypath);
 
+            n.Finish();
+
             Console.WriteLine("\n*** Please type the extension(txt, docx, jpg) of the file if you want to filter: ***");
             var fileExtension = Console.ReadLine();
-            watcher.Filter = $"*.{fileExtension}";
             FilterDirectoryFilesByExtension(rootDirectorypath, fileExtension);
 
             Console.WriteLine("\nPress 'Enter' to quit...");
             Console.ReadLine();
         }
+
+       
 
         public static void PrintDirectoryTree(string rootDirectoryPath)
         {
@@ -127,9 +116,9 @@ namespace FileSystemVisitor
             Console.WriteLine($"Changed: {e.FullPath}");
         }
 
-        private static void OnCreated(object sender, FileSystemEventArgs e)
+        private static void OnStarted(object sender, FileSystemEventArgs e)
         {
-            string value = $"Created: {e.FullPath}";
+            string value = $"Started: {e.FullPath}";
             Console.WriteLine(value);
         }
 
