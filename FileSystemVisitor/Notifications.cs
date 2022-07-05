@@ -9,7 +9,7 @@ namespace FileSystemVisitor
     public class Notifications
     {
         public delegate void EventHandler(string message);
-        public EventHandler? Notify;
+        public EventHandler Notify;
         public void Start()
         {
             Notify?.Invoke($"\n*** Start ***\n");   // 2.Вызов события 
